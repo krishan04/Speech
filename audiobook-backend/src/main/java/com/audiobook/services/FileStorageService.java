@@ -91,7 +91,9 @@ public class FileStorageService {
 
     public Page<Novel> getAllNovels(Pageable pageable) {
         return novelRepository.findAll(pageable);
-    }public String extractTextFromFile(String filePath) {
+    }
+    
+    public String extractTextFromFile(String filePath) {
         File file = new File(filePath);
         if (!file.exists()) {
             System.out.println("❌ File not found: " + filePath);
