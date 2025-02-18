@@ -41,19 +41,27 @@ public class FileStorageService {
         String filePath = UPLOAD_DIR + file.getOriginalFilename();
         file.transferTo(new File(filePath));
     
-        // ✅ Create Novel object **before** setting content
+        // ✅ Extract text **before** saving to the database
+        String content = extractTextFromFile(filePath);
+        if (content == null || content.isBlank()) {
+            content = "No text extracted";  // Fallback text
+        }
+    
+        // System.out.println("📜 Extracted Text: " + content.substring(0, Math.min(content.length(), 100)) + "...");  // ✅ Debug print (First 100 chars)
+    
+        // ✅ Create Novel object and set all properties
         Novel novel = new Novel();
         novel.setTitle(title);
         novel.setAuthor(author);
         novel.setFilePath(filePath);
-    
-        // ✅ Extract text and set content
-        String content = extractTextFromFile(filePath);
-        System.out.println("Extracted Text: " + content);  // ✅ Debugging log
-        novel.setContent(content);  // ✅ Now 'novel' exists
-    
-        // ✅ Save to database
-        return novelRepository.save(novel);
+        // System.out.println("📜 Extracted Content: " + content);
+        // System.out.println("📜 Extracted Content Length: " + content.length());
+
+        novel.setContent(content);  // ✅ Save extracted content
+        Novel savedNovel = novelRepository.save(novel);  // ✅ Save to DB
+        // System.out.println("📌 Stored Content: " + savedNovel.getContent().substring(0,100) + "kejekekn");  // ✅ Verify stored value
+        // System.out.println("Content Type: " + content.getClass().getName());
+        return savedNovel;
     }
 
     // ✅ Fetch All Novels
